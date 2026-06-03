@@ -1,7 +1,7 @@
 {
   "name": "Convertisseur Chiffres Arabes — LTN LAOUAR",
   "short_name": "Chiffres AR",
-  "description": "Convertisseur de chiffres occidentaux en chiffres arabes-indiens — DPMO Dét MAINTENANCE",
+  "description": "Convertisseur chiffres arabes — DPMO Dét MAINTENANCE",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#081413",
@@ -9,12 +9,11 @@
   "orientation": "any",
   "icons": [
     {
-      "src": "favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ],
-  "categories": ["utilities", "tools"],
   "lang": "fr"
 }
