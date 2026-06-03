@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="theme-color" content="#0D1F1E"/>
+  <meta name="description" content="Convertisseur chiffres arabes — LTN LAOUAR — DPMO Dét MAINTENANCE"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Chiffres AR"/>
+  <title>Convertisseur Chiffres Arabes</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml"/>
+  <link rel="apple-touch-icon" href="favicon.svg"/>
+  <link rel="manifest" href="manifest.json"/>
+  <link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Cinzel:wght@400;600;900&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #0A1628;
+      --dark:   #081413;
+      --card:   #0F1E1D;
+      --teal:   #00897B;
+      --teal2:  #00695C;
+      --gold:   #D4A843;
+      --gold2:  #B8892A;
+      --cream:  #F0E6CC;
+      --sand:   #C8A96E;
+      --red:    #C0392B;
+      --blue:   #002395;
+      --white:  #F8F8F8;
+      --cedar:  #2E7D32;
+      --accent: #E65C00;
+      --border: rgba(212,168,67,0.22);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: var(--dark);
+      font-family: 'Raleway', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ─── Geometric background ─── */
+    .bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(45deg, rgba(212,168,67,0.03) 0, rgba(212,168,67,0.03) 1px, transparent 0, transparent 50%),
+        repeating-linear-gradient(-45deg, rgba(212,168,67,0.03) 0, rgba(212,168,67,0.03) 1px, transparent 0, transparent 50%);
+      background-size: 36px 36px;
+    }
+    .bg-star {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(90vw, 700px);
+      height: min(90vw, 700px);
+      opacity: 0.018;
+      animation: spin 120s linear infinite;
+    }
+    @keyframes spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+
+    /* ─── Layout ─── */
+    .wrapper {
+      width: 100%;
+      max-width: 640px;
+      padding: 1.2rem 1rem 2rem;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* ─── Identity Banner ─── */
+    .identity {
+      background: linear-gradient(135deg, rgba(0,41,148,0.18), rgba(192,57,43,0.12));
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      animation: fadeDown 0.6s ease both;
+      overflow: hidden;
+      position: relative;
+    }
+    .identity::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--blue), var(--white), var(--red));
+    }
+
+    /* PMO Logo SVG inline */
+    .logo-wrap {
+      flex-shrink: 0;
+      width: clamp(64px, 15vw, 88px);
+      height: clamp(64px, 15vw, 88px);
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+    }
+    .logo-wrap svg { width: 100%; height: 100%; }
+
+    /* 8e RPIMa badge */
+    .rpima-wrap {
+      flex-shrink: 0;
+      width: clamp(50px, 12vw, 70px);
+      height: clamp(50px, 12vw, 70px);
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+    }
+    .rpima-wrap svg { width: 100%; height: 100%; }
+
+    .identity-text {
+      flex: 1;
+      min-width: 0;
+    }
+    .identity-unit {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(0.55rem, 2.2vw, 0.75rem);
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .identity-name {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(0.9rem, 3.5vw, 1.3rem);
+      font-weight: 900;
+      color: var(--cream);
+      letter-spacing: 0.06em;
+      line-height: 1.2;
+      margin-top: 0.15rem;
+    }
+    .identity-sub {
+      font-size: clamp(0.62rem, 2vw, 0.72rem);
+      color: var(--sand);
+      font-weight: 300;
+      margin-top: 0.2rem;
+      letter-spacing: 0.08em;
+    }
+
+    /* ─── App Title ─── */
+    header {
+      text-align: center;
+      animation: fadeDown 0.6s 0.1s ease both;
+    }
+    .arabic-nums {
+      font-family: 'Scheherazade New', serif;
+      font-size: clamp(1.4rem, 5vw, 2rem);
+      color: var(--gold);
+      letter-spacing: 0.15em;
+      filter: drop-shadow(0 0 10px rgba(212,168,67,0.4));
+      display: block;
+    }
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1rem, 4vw, 1.6rem);
+      font-weight: 600;
+      color: var(--cream);
+      letter-spacing: 0.08em;
+      margin-top: 0.2rem;
+    }
+    h1 em { font-style: italic; color: var(--gold); font-weight: 400; }
+    .subtitle {
+      font-size: clamp(0.72rem, 2.2vw, 0.85rem);
+      color: var(--sand);
+      font-weight: 300;
+      margin-top: 0.25rem;
+      letter-spacing: 0.06em;
+    }
+
+    /* ─── Card ─── */
+    .card {
+      background: linear-gradient(160deg, #142322, #0D1A19);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: clamp(1.2rem, 4vw, 2rem);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.6), inset 0 1px 0 rgba(212,168,67,0.1);
+      animation: fadeUp 0.6s 0.15s ease both;
+    }
+
+    @keyframes fadeDown { from { opacity:0; transform:translateY(-18px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeUp   { from { opacity:0; transform:translateY(18px);  } to { opacity:1; transform:translateY(0); } }
+
+    /* ─── Tabs ─── */
+    .tabs {
+      display: flex;
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      padding: 3px;
+      margin-bottom: 1.4rem;
+      gap: 3px;
+    }
+    .tab {
+      flex: 1;
+      padding: clamp(0.45rem, 2vw, 0.6rem) 0.5rem;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Raleway', sans-serif;
+      font-size: clamp(0.78rem, 2.5vw, 0.9rem);
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.22s;
+      background: transparent;
+      color: rgba(240,230,204,0.38);
+      letter-spacing: 0.04em;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .tab.active {
+      background: linear-gradient(135deg, var(--teal), var(--teal2));
+      color: var(--cream);
+      box-shadow: 0 2px 14px rgba(0,137,123,0.45);
+    }
+
+    /* ─── Input ─── */
+    .section-label {
+      font-size: clamp(0.66rem, 2vw, 0.72rem);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--sand);
+      margin-bottom: 0.5rem;
+      opacity: 0.8;
+    }
+    .input-group {
+      margin-bottom: 1.2rem;
+      position: relative;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: clamp(0.75rem, 2.5vw, 1rem) 2.8rem clamp(0.75rem, 2.5vw, 1rem) 1rem;
+      background: rgba(255,255,255,0.04);
+      border: 1.5px solid rgba(212,168,67,0.25);
+      border-radius: 10px;
+      font-family: 'Scheherazade New', serif;
+      font-size: clamp(1.3rem, 5vw, 1.7rem);
+      color: var(--cream);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      letter-spacing: 0.08em;
+      direction: ltr;
+      -webkit-appearance: none;
+    }
+    input[type="text"]::placeholder { color: rgba(240,230,204,0.18); font-size: clamp(1rem,4vw,1.3rem); }
+    input[type="text"]:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(0,137,123,0.15); }
+    .clear-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: rgba(240,230,204,0.25);
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 6px 8px;
+      transition: color 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .clear-btn:hover, .clear-btn:active { color: var(--accent); }
+
+    /* ─── Numpad ─── */
+    .numpad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(5px, 1.5vw, 8px);
+      margin-bottom: 1.2rem;
+    }
+    .numpad button {
+      padding: clamp(0.6rem, 2.5vw, 0.85rem) 0.4rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(212,168,67,0.13);
+      border-radius: 9px;
+      cursor: pointer;
+      transition: all 0.13s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .numpad button:hover, .numpad button:focus {
+      background: rgba(0,137,123,0.2);
+      border-color: var(--teal);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,137,123,0.2);
+    }
+    .numpad button:active { transform: scale(0.95) !important; }
+    .numpad .btn-zero { grid-column: span 2; }
+    .numpad .btn-del { background: rgba(230,92,0,0.1); border-color: rgba(230,92,0,0.2); }
+    .numpad .btn-del:hover { background: rgba(230,92,0,0.25); border-color: var(--accent); }
+    .numpad button .western {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(0.95rem, 3.5vw, 1.15rem);
+      color: var(--cream);
+      font-weight: 600;
+    }
+    .numpad button .arabic {
+      font-family: 'Scheherazade New', serif;
+      font-size: clamp(0.85rem, 3vw, 1.05rem);
+      color: var(--gold);
+    }
+
+    /* ─── Result ─── */
+    .result-box {
+      background: linear-gradient(135deg, rgba(212,168,67,0.07), rgba(0,137,123,0.07));
+      border: 1.5px solid rgba(212,168,67,0.28);
+      border-radius: 13px;
+      padding: clamp(1rem, 3vw, 1.5rem) 1rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .result-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), var(--teal), transparent);
+    }
+    .result-label {
+      font-size: clamp(0.65rem, 2vw, 0.72rem);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--sand);
+      opacity: 0.7;
+      margin-bottom: 0.5rem;
+    }
+    .result-value {
+      font-family: 'Scheherazade New', serif;
+      font-size: clamp(2rem, 10vw, 3.6rem);
+      color: var(--cream);
+      letter-spacing: 0.12em;
+      min-height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      direction: ltr;
+      word-break: break-all;
+      line-height: 1.2;
+    }
+    .result-value.pulse { animation: popIn 0.3s ease; }
+    @keyframes popIn {
+      0%  { transform: scale(1); }
+      45% { transform: scale(1.07); color: var(--gold); }
+      100%{ transform: scale(1); }
+    }
+    .result-empty { color: rgba(240,230,204,0.13); font-family:'Raleway',sans-serif; font-size:1rem; font-weight:300; }
+
+    .copy-btn {
+      margin-top: 0.75rem;
+      padding: clamp(0.38rem, 1.5vw, 0.45rem) clamp(1rem, 4vw, 1.3rem);
+      background: transparent;
+      border: 1px solid rgba(212,168,67,0.28);
+      border-radius: 20px;
+      color: var(--sand);
+      font-family: 'Raleway', sans-serif;
+      font-size: clamp(0.78rem, 2.5vw, 0.85rem);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.06em;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .copy-btn:hover { background: rgba(212,168,67,0.1); border-color: var(--gold); color: var(--gold); }
+    .copy-btn.copied { color: #4CAF50; border-color: #4CAF50; }
+
+    /* ─── Reference table ─── */
+    .reference {
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+    .ref-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(0.72rem, 2.2vw, 0.85rem);
+      color: var(--sand);
+      text-align: center;
+      margin-bottom: 0.75rem;
+      opacity: 0.6;
+      letter-spacing: 0.1em;
+    }
+    .ref-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: clamp(4px, 1.2vw, 7px);
+    }
+    .ref-cell {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(212,168,67,0.1);
+      border-radius: 8px;
+      padding: clamp(0.35rem,1.5vw,0.55rem) 0.2rem;
+      text-align: center;
+      transition: background 0.15s;
+    }
+    .ref-cell:hover { background: rgba(0,137,123,0.1); }
+    .ref-cell .w { font-family:'Cinzel',serif; font-size:clamp(0.9rem,3vw,1.1rem); color:var(--cream); font-weight:700; }
+    .ref-cell .a { font-family:'Scheherazade New',serif; font-size:clamp(0.9rem,3vw,1.1rem); color:var(--gold); }
+    .ref-cell .sep { color:rgba(212,168,67,0.25); font-size:0.6rem; line-height:1; }
+
+    /* ─── Info badge ─── */
+    .info-badge {
+      background: rgba(0,137,123,0.07);
+      border: 1px solid rgba(0,137,123,0.2);
+      border-radius: 10px;
+      padding: clamp(0.6rem,2vw,0.8rem) 1rem;
+      font-size: clamp(0.72rem,2.2vw,0.82rem);
+      color: var(--sand);
+      text-align: center;
+      line-height: 1.6;
+      animation: fadeUp 0.6s 0.45s ease both;
+    }
+    .info-badge strong { color: var(--teal); font-weight: 700; }
+
+    /* ─── Footer ─── */
+    footer {
+      text-align: center;
+      color: rgba(212,168,67,0.28);
+      font-size: clamp(0.65rem,2vw,0.75rem);
+      letter-spacing: 0.08em;
+      font-family: 'Cinzel', serif;
+      animation: fadeUp 0.6s 0.55s ease both;
+      padding-bottom: env(safe-area-inset-bottom, 0.5rem);
+    }
+
+    /* ─── Responsive fine-tuning ─── */
+    @media (min-width: 480px) {
+      .identity { padding: 1.2rem 1.5rem; gap: 1.2rem; }
+    }
+    @media (max-width: 360px) {
+      .identity { flex-wrap: wrap; justify-content: center; text-align: center; }
+      .rpima-wrap { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="bg">
+  <svg class="bg-star" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" stroke="#D4A843" stroke-width="0.5" transform="translate(100,100)">
+      <polygon points="0,-90 11,-33 52,-52 33,-11 90,0 33,11 52,52 11,33 0,90 -11,33 -52,52 -33,11 -90,0 -33,-11 -52,-52 -11,-33"/>
+      <circle r="65"/><circle r="46"/><circle r="28"/><circle r="11"/>
+      <line x1="0" y1="-90" x2="0" y2="90"/>
+      <line x1="-90" y1="0" x2="90" y2="0"/>
+      <line x1="-64" y1="-64" x2="64" y2="64"/>
+      <line x1="64" y1="-64" x2="-64" y2="64"/>
+      <rect x="-46" y="-46" width="92" height="92" transform="rotate(45)"/>
+      <rect x="-32" y="-32" width="64" height="64"/>
+    </g>
+  </svg>
+</div>
+
+<div class="wrapper">
+
+  <!-- ─── Identity Banner ─── -->
+  <div class="identity">
+    <!-- PMO France-Liban logo (SVG recreation) -->
+    <div class="logo-wrap">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <!-- Outer ring black -->
+        <circle cx="50" cy="50" r="49" fill="#111" stroke="#333" stroke-width="1"/>
+        <!-- White field -->
+        <circle cx="50" cy="50" r="40" fill="#F8F8F8"/>
+        <!-- French flag inside inner circle -->
+        <clipPath id="cflag">
+          <circle cx="50" cy="50" r="29"/>
+        </clipPath>
+        <g clip-path="url(#cflag)">
+          <rect x="21" y="21" width="20" height="58" fill="#002395"/>
+          <rect x="41" y="21" width="18" height="58" fill="#FFFFFF"/>
+          <rect x="59" y="21" width="20" height="58" fill="#ED2939"/>
+        </g>
+        <!-- Lebanon map outline on flag -->
+        <g clip-path="url(#cflag)">
+          <path d="M50,28 L56,30 L60,35 L62,40 L60,48 L55,52 L52,58 L48,62 L44,58 L40,52 L38,45 L40,38 L44,32 Z"
+                fill="rgba(192,57,43,0.55)" stroke="rgba(100,0,0,0.4)" stroke-width="0.8"/>
+        </g>
+        <circle cx="50" cy="50" r="29" fill="none" stroke="#8B6914" stroke-width="1.2"/>
+        <!-- Cedar tree centered -->
+        <g transform="translate(50,46)">
+          <rect x="-2.5" y="8" width="5" height="8" fill="#5D4037"/>
+          <polygon points="0,-13 -9,0 9,0" fill="#1B5E20"/>
+          <polygon points="0,-9 -12,4 12,4" fill="#2E7D32"/>
+          <polygon points="0,-4 -15,9 15,9" fill="#388E3C"/>
+        </g>
+        <!-- Top arc text -->
+        <path id="topArc" d="M 15,50 A 35,35 0 0,1 85,50" fill="none"/>
+        <text font-family="Arial,sans-serif" font-size="6" font-weight="bold" fill="#1A1A1A" letter-spacing="0.3">
+          <textPath href="#topArc" startOffset="5%">PARTENARIAT MILITAIRE</textPath>
+        </text>
+        <!-- Bottom arc text -->
+        <path id="botArc" d="M 18,55 A 32,32 0 0,0 82,55" fill="none"/>
+        <text font-family="Arial,sans-serif" font-size="6.5" font-weight="bold" fill="#1A1A1A" letter-spacing="0.5">
+          <textPath href="#botArc" startOffset="12%">FRANCE – LIBAN</textPath>
+        </text>
+      </svg>
+    </div>
+
+    <!-- Identity text -->
+    <div class="identity-text">
+      <div class="identity-unit">DPMO · Dét MAINTENANCE</div>
+      <div class="identity-name">LTN LAOUAR</div>
+      <div class="identity-sub">Partenariat Militaire Opérationnel · France–Liban</div>
+    </div>
+
+    <!-- 8e RPIMa badge -->
+    <div class="rpima-wrap">
+      <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+        <!-- Shield background -->
+        <path d="M40,4 L72,18 L72,50 C72,65 58,76 40,80 C22,76 8,65 8,50 L8,18 Z"
+              fill="#8B0000" stroke="#D4A843" stroke-width="2"/>
+        <!-- Parachute -->
+        <path d="M40,20 Q26,20 26,32 Q26,38 33,40 L40,42 L47,40 Q54,38 54,32 Q54,20 40,20 Z"
+              fill="none" stroke="#F5F5DC" stroke-width="1.8"/>
+        <!-- Parachute cords -->
+        <line x1="33" y1="40" x2="37" y2="52" stroke="#F5F5DC" stroke-width="1"/>
+        <line x1="40" y1="42" x2="40" y2="52" stroke="#F5F5DC" stroke-width="1"/>
+        <line x1="47" y1="40" x2="43" y2="52" stroke="#F5F5DC" stroke-width="1"/>
+        <!-- Soldier silhouette hanging -->
+        <circle cx="40" cy="54" r="3" fill="#F5F5DC"/>
+        <line x1="40" y1="57" x2="40" y2="64" stroke="#F5F5DC" stroke-width="1.5"/>
+        <line x1="36" y1="60" x2="44" y2="60" stroke="#F5F5DC" stroke-width="1.5"/>
+        <line x1="40" y1="64" x2="37" y2="68" stroke="#F5F5DC" stroke-width="1.5"/>
+        <line x1="40" y1="64" x2="43" y2="68" stroke="#F5F5DC" stroke-width="1.5"/>
+        <!-- Anchor overlaid -->
+        <g transform="translate(40,45) scale(0.45)" opacity="0.65">
+          <line x1="0" y1="-14" x2="0" y2="14" stroke="#D4A843" stroke-width="3"/>
+          <path d="M -8,0 A 8,8 0 0,0 8,0" fill="none" stroke="#D4A843" stroke-width="2.5"/>
+          <circle cx="0" cy="-14" r="3" fill="none" stroke="#D4A843" stroke-width="2"/>
+          <path d="M -10,14 Q 0,10 10,14" fill="none" stroke="#D4A843" stroke-width="2.5"/>
+        </g>
+        <!-- "8" top left -->
+        <text x="16" y="36" font-family="Arial" font-size="13" font-weight="900" fill="#FFD700">8</text>
+        <!-- Bottom text -->
+        <text x="40" y="76" font-family="Arial" font-size="5.5" font-weight="bold" fill="#D4A843" text-anchor="middle" letter-spacing="0.5">RPIMa</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ─── App Header ─── -->
+  <header>
+    <span class="arabic-nums">٠  ١  ٢  ٣  ٤  ٥</span>
+    <h1>Convertisseur <em>Chiffres Arabes</em></h1>
+    <p class="subtitle">Chiffres occidentaux ↔ arabes-indiens orientaux</p>
+  </header>
+
+  <!-- ─── Main Card ─── -->
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" onclick="setMode('to-arabic')">Occ. → Arabe &nbsp;٣٢١</button>
+      <button class="tab" onclick="setMode('to-western')">Arabe → Occ. &nbsp;321</button>
+    </div>
+
+    <div class="input-group">
+      <p class="section-label" id="input-label">Entrez un nombre occidental</p>
+      <input type="text" id="main-input" placeholder="ex: 2024" oninput="onInput()" inputmode="decimal" autocomplete="off" autocorrect="off" spellcheck="false"/>
+      <button class="clear-btn" onclick="clearInput()" aria-label="Effacer">×</button>
+    </div>
+
+    <div class="numpad" id="numpad"></div>
+
+    <div class="result-box">
+      <p class="result-label" id="result-label">Résultat en chiffres arabes</p>
+      <div class="result-value" id="result-display" aria-live="polite">
+        <span class="result-empty">—</span>
+      </div>
+      <button class="copy-btn" id="copy-btn" onclick="copyResult()">Copier</button>
+    </div>
+  </div>
+
+  <!-- ─── Reference table ─── -->
+  <div class="reference">
+    <p class="ref-title">Table de correspondance</p>
+    <div class="ref-grid" id="ref-grid"></div>
+  </div>
+
+  <!-- ─── Info ─── -->
+  <div class="info-badge">
+    Utilisés dans les pays du <strong>Golfe Persique</strong>, au <strong>Liban</strong>, en <strong>Égypte</strong> et dans l'ensemble du monde arabophone.<br/>
+    Ces chiffres sont l'origine historique de nos chiffres « arabes » occidentaux.
+  </div>
+
+  <footer>LTN LAOUAR · DPMO Dét MAINTENANCE · 8<sup>e</sup> RPIMa</footer>
+</div>
+
+<script>
+  const W2A = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+  const A2W = {'٠':'0','١':'1','٢':'2','٣':'3','٤':'4','٥':'5','٦':'6','٧':'7','٨':'8','٩':'9'};
+
+  let mode = 'to-arabic';
+  let currentValue = '';
+
+  function setMode(m) {
+    mode = m;
+    currentValue = '';
+    document.getElementById('main-input').value = '';
+    updateDisplay();
+    document.querySelectorAll('.tab').forEach((t, i) => {
+      t.classList.toggle('active', (i===0 && m==='to-arabic') || (i===1 && m==='to-western'));
+    });
+    document.getElementById('input-label').textContent =
+      m === 'to-arabic' ? 'Entrez un nombre occidental' : 'Entrez un nombre arabe';
+    document.getElementById('result-label').textContent =
+      m === 'to-arabic' ? 'Résultat en chiffres arabes' : 'Résultat en chiffres occidentaux';
+    document.getElementById('main-input').placeholder =
+      m === 'to-arabic' ? 'ex: 2024' : 'ex: ٢٠٢٤';
+    buildNumpad();
+  }
+
+  function buildNumpad() {
+    const pad = document.getElementById('numpad');
+    pad.innerHTML = '';
+    [1,2,3,4,5,6,7,8,9].forEach(d => {
+      const btn = document.createElement('button');
+      const char = mode === 'to-arabic' ? String(d) : W2A[d];
+      btn.innerHTML = mode === 'to-arabic'
+        ? `<span class="western">${d}</span><span class="arabic">${W2A[d]}</span>`
+        : `<span class="arabic">${W2A[d]}</span><span class="western">${d}</span>`;
+      btn.onclick = () => appendDigit(char);
+      pad.appendChild(btn);
+    });
+    const z = document.createElement('button');
+    z.className = 'btn-zero';
+    const zChar = mode === 'to-arabic' ? '0' : W2A[0];
+    z.innerHTML = mode === 'to-arabic'
+      ? `<span class="western">0</span><span class="arabic">${W2A[0]}</span>`
+      : `<span class="arabic">${W2A[0]}</span><span class="western">0</span>`;
+    z.onclick = () => appendDigit(zChar);
+    pad.appendChild(z);
+
+    const del = document.createElement('button');
+    del.className = 'btn-del';
+    del.innerHTML = '<span class="western" style="font-size:1.1rem">⌫</span>';
+    del.onclick = deleteDigit;
+    pad.appendChild(del);
+  }
+
+  function appendDigit(c) {
+    currentValue += c;
+    document.getElementById('main-input').value = currentValue;
+    updateDisplay();
+  }
+
+  function deleteDigit() {
+    currentValue = [...currentValue].slice(0,-1).join('');
+    document.getElementById('main-input').value = currentValue;
+    updateDisplay();
+  }
+
+  function clearInput() {
+    currentValue = '';
+    document.getElementById('main-input').value = '';
+    updateDisplay();
+  }
+
+  function onInput() {
+    currentValue = document.getElementById('main-input').value;
+    updateDisplay();
+  }
+
+  function convert(val) {
+    if (!val) return '';
+    if (mode === 'to-arabic') {
+      return [...val].map(c => /[0-9]/.test(c) ? W2A[+c] : c).join('');
+    } else {
+      return [...val].map(c => A2W[c] !== undefined ? A2W[c] : c).join('');
+    }
+  }
+
+  function updateDisplay() {
+    const result = convert(currentValue);
+    const display = document.getElementById('result-display');
+    if (result) {
+      display.textContent = result;
+      display.classList.remove('pulse');
+      void display.offsetWidth;
+      display.classList.add('pulse');
+    } else {
+      display.innerHTML = '<span class="result-empty">—</span>';
+    }
+  }
+
+  function copyResult() {
+    const result = convert(currentValue);
+    if (!result) return;
+    navigator.clipboard.writeText(result).then(() => {
+      const btn = document.getElementById('copy-btn');
+      btn.textContent = '✓ Copié !';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copier'; btn.classList.remove('copied'); }, 1800);
+    });
+  }
+
+  function buildRefGrid() {
+    const grid = document.getElementById('ref-grid');
+    for (let i = 0; i <= 9; i++) {
+      const cell = document.createElement('div');
+      cell.className = 'ref-cell';
+      cell.innerHTML = `<div class="w">${i}</div><div class="sep">↕</div><div class="a">${W2A[i]}</div>`;
+      grid.appendChild(cell);
+    }
+  }
+
+  // PWA registration
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    });
+  }
+
+  buildNumpad();
+  buildRefGrid();
+</script>
+</body>
+</html>
